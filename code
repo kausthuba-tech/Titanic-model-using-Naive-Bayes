@@ -1,0 +1,24 @@
+import numpy as np # linear algebra
+import pandas as pd
+url=r"../input/titanic/train.csv"
+df=pd.read_csv(url)
+print(df.head())
+i=df.drop(["PassengerId","Name","SibSp","Parch","Ticket","Cabin","Embarked"],axis="columns")
+print(i.head(6))
+tf=pd.get_dummies(df["Sex"])
+print(tf)
+merge=pd.concat([i,tf],axis="columns")
+print(merge)
+merge["Age"]=merge["Age"].fillna(merge["Age"].mean())
+print(merge)
+inputs=merge.drop(["Survived","Sex"],axis="columns")
+targets=merge["Survived"]
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(inputs,targets,test_size=0.2)
+print(len(X_train))
+from sklearn.naive_bayes import GaussianNB
+model=GaussianNB()
+model.fit(X_train,y_train)
+print(model.score(X_test,y_test))
+pred=model.predict(X_test)
+print(pred)
